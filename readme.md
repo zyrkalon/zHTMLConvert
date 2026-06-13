@@ -1,139 +1,97 @@
-```markdown
-# zHTMLConvert 🚀
+# zHTMLConvert — Markdown to HTML Converter
 
-**zHTMLConvert** lets you turn Markdown files into clean HTML webpages instantly.
-
-Built with pure Java, this lightweight Command Line Interface (CLI) utility reads basic Markdown syntax (`#` headings, `**bold text**`, and paragraphs) and structures it into a fully valid, standards-compliant HTML5 document.
+A console-based Java application that converts Markdown files into clean, standalone HTML webpages instantly.
 
 ---
 
-## ✨ Features
+## Requirements
 
-- **Instant Conversion:** Parses Markdown elements instantly into structured HTML tags.
-- **Heading Support:** Converts `#`, `##`, and `###` to `<h1>`, `<h2>`, and `<h3>`.
-- **Inline Styling:** Detects and changes `**bold text**` into `<strong>bold text</strong>`.
-- **Smart Paragraphs:** Automatically wraps regular, block text into structural `<p>` tags.
-- **Full Boilerplate Output:** Wraps content inside a proper HTML template (`<!DOCTYPE html>`, `<html>`, `<head>`, `<body>`).
-- **Zero Dependencies:** Runs natively on standard Java SE without needing massive external libraries.
+- **Java SE 17** or higher (tested up to JDK 25)
+- **Maven** (only needed to build from source)
 
 ---
 
-## 🛠️ How It Works
-
-`zHTMLConvert` processes raw text streams dynamically line-by-line using Java File I/O and regular expressions (Regex) to map Markdown patterns to corresponding semantic HTML tags.
-
-
-```
-
-```
-   [ Input.md ]
-        │
-        ▼
-
-```
-
-┌───────────────────────┐
-│     zHTMLConvert      │
-│  ───────────────────  │
-│  1. BufferedReader    │  <-- Streams text efficiently line-by-line
-│  2. Regex Engines     │  <-- Matches and replaces text tokens
-│  3. BufferedWriter    │  <-- Assembles structural HTML elements
-└───────────────────────┘
-│
-▼
-[ Output.html ]
-
-```
-
----
-
-## ⚙️ Prerequisites
-
-- **Java Development Kit (JDK):** Version 8 or higher installed on your local machine.
-- **Terminal / Command Prompt:** To run the utility compilation and execution commands.
-
----
-
-## 🚀 Quick Start Guide
-
-Follow these simple steps to compile and run **zHTMLConvert** locally.
-
-### 1. Clone & Setup
-Save your main Java code file as `ZHTMLConvert.java` in an organized workspace directory.
-
-### 2. Compile the Source Code
-Open your terminal inside the directory containing the file and compile the Java program:
-```bash
-javac ZHTMLConvert.java
-
-```
-
-### 3. Run the Converter
-
-Execute the compiled bytecode by passing the paths for your input Markdown file and desired output HTML file as arguments:
+## Build
 
 ```bash
-java ZHTMLConvert input.md output.html
+mvn clean package
+```
 
+This produces `target/zHTMLConvert-1.0-SNAPSHOT.jar`.
+
+---
+
+## Run
+
+### Windows
+
+**Using the wrapper script** (recommended — double-click or run from terminal):
+
+```cmd
+.\zhtmlconvert.cmd input.md output.html
+```
+
+**Directly with Java:**
+
+```cmd
+java -jar target\zHTMLConvert-1.0-SNAPSHOT.jar input.md output.html
+```
+
+### Linux / macOS
+
+**Using the wrapper script:**
+
+```bash
+chmod +x zhtmlconvert.sh
+./zhtmlconvert.sh input.md output.html
+```
+
+**Directly with Java:**
+
+```bash
+java -jar target/zHTMLConvert-1.0-SNAPSHOT.jar input.md output.html
 ```
 
 ---
 
-## 📝 Parsing Example
+## Parsing Matrix
 
-### Input (`input.md`)
+| Markdown Element            | HTML Output                          | Processing Rule / Context                 |
+|-----------------------------|--------------------------------------|-------------------------------------------|
+| `# Heading 1`               | `<h1>Heading 1</h1>`                | Matches single `#` prefix at line start   |
+| `## Heading 2`              | `<h2>Heading 2</h2>`                | Matches double `##` prefix at line start  |
+| `### Heading 3`             | `<h3>Heading 3</h3>`                | Matches triple `###` prefix at line start |
+| `**bold text**`             | `<strong>bold text</strong>`        | Inline replacement via Regex evaluations  |
+| Regular unformatted text    | `<p>Regular unformatted text</p>`   | Blocks wrapped automatically              |
 
-```markdown
-# Getting Started with zHTMLConvert
+*Note: The converter wraps the entire translated body sequence inside a valid HTML5 structural template (`<!DOCTYPE html>`, `<html>`, `<head>`, and `<body>`).*
 
-This is a paragraph featuring **bold syntax** to emphasize important details.
+---
 
-## Next Steps
-Stay tuned for future markdown features!
+## Project Structure
 
-```
-
-### Output (`output.html`)
-
-```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Converted Document</title>
-</head>
-<body>
-    <h1>Getting Started with zHTMLConvert</h1>
-    <p>This is a paragraph featuring <strong>bold syntax</strong> to emphasize important details.</p>
-    <h2>Next Steps</h2>
-    <p>Stay tuned for future markdown features!</p>
-</body>
-</html>
-
+```text
+zHTMLConvert/
+├── pom.xml                               # Maven project descriptor
+├── README.md                             # This file
+├── zhtmlconvert.cmd                      # Windows launcher
+├── zhtmlconvert.sh                       # Linux/macOS launcher
+└── src/main/java/dev/zyrkalon/
+    ├── App.java                          # CLI arguments validation & execution lifecycle
+    └── MarkdownParser.java               # File stream handles & structural Regex parsing rules
 ```
 
 ---
 
-## 🧠 Core Concepts Learned
+## Files Overview
 
-By building or analyzing this repository, you gain exposure to core software engineering foundations:
-
-1. **Java File I/O (`java.io`):** Utilizing `BufferedReader` and `BufferedWriter` to handle continuous file reading/writing streams safely without blocking system memory.
-2. **Regular Expressions (`java.util.regex`):** Employing explicit `Pattern` and `Matcher` abstractions to identify formatting flags within continuous strings.
-3. **Exception Handling:** Managing runtime file errors and invalid pathways cleanly with explicit `try-catch` safety blocks.
+- **`App.java`** — Main entry point. Validates input/output command-line arguments, triggers the document streaming cycles, and renders transformation logs to the terminal.
+- **`MarkdownParser.java`** — Orchestrates the underlying conversion logic. Uses a `BufferedReader` to process strings line-by-line using Regex mappings, and compiles the final structure into the target destination using a `BufferedWriter`.
+- **`zhtmlconvert.cmd`** — Windows batch wrapper that handles platform directory environments, checks for active local Java paths, and forwards arguments into the jar container.
+- **`zhtmlconvert.sh`** — POSIX shell wrapper script for Linux/macOS systems that resolves global path dependencies and handles structural runtime execution.
 
 ---
 
-## 🗺️ Future Roadmap
+## License
 
-Planned structural features for upcoming iterations:
-
-* [ ] Support for italics (`*text*` or `_text_`)
-* [ ] Ordered and unordered bulleted lists (`-` or `1.`)
-* [ ] Hyperlinks (`[Text](URL)`) and image embeds (`![Alt](URL)`)
-* [ ] Custom CSS theme styling embedding (`--style` flag support)
-
-```
-
-```
+MIT
