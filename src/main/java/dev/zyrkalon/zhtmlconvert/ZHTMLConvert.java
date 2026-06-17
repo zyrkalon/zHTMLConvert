@@ -1,22 +1,21 @@
-package org.example.zhtmlconvert;
+package dev.zyrkalon.zhtmlconvert;
 
 import java.io.*;
 
 public class ZHTMLConvert {
 
-    private static final String HTML_TEMPLATE = """
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>%s</title>
-        </head>
-        <body>
-        %s
-        </body>
-        </html>
-        """;
+    private static final String HTML_TEMPLATE =
+        "<!DOCTYPE html>\n" +
+        "<html lang=\"en\">\n" +
+        "<head>\n" +
+        "    <meta charset=\"UTF-8\">\n" +
+        "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n" +
+        "    <title>%s</title>\n" +
+        "</head>\n" +
+        "<body>\n" +
+        "%s\n" +
+        "</body>\n" +
+        "</html>";
 
     public static void main(String[] args) {
         if (args.length < 2) {
@@ -34,7 +33,7 @@ public class ZHTMLConvert {
             String title = extractTitle(inputPath);
             String html = String.format(HTML_TEMPLATE, title, bodyContent);
             writeFile(outputPath, html);
-            System.out.println("Converted " + inputPath + " -> " + outputPath);
+            System.out.println("Complete.");
         } catch (IOException e) {
             System.err.println("Error: " + e.getMessage());
             System.exit(1);

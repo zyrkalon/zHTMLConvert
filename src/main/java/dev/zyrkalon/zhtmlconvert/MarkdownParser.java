@@ -1,5 +1,6 @@
-package org.example.zhtmlconvert;
+package dev.zyrkalon.zhtmlconvert;
 
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class MarkdownParser {
@@ -8,7 +9,7 @@ public class MarkdownParser {
     private static final Pattern BOLD = Pattern.compile("\\*\\*(.+?)\\*\\*");
 
     public String parse(String markdown) {
-        if (markdown == null || markdown.isBlank()) {
+        if (markdown == null || markdown.trim().isEmpty()) {
             return "";
         }
 
@@ -19,12 +20,12 @@ public class MarkdownParser {
         for (String line : lines) {
             String trimmed = line.trim();
 
-            if (trimmed.isBlank()) {
+            if (trimmed.isEmpty()) {
                 flushParagraph(html, paragraph);
                 continue;
             }
 
-            var headingMatcher = HEADING.matcher(trimmed);
+            Matcher headingMatcher = HEADING.matcher(trimmed);
             if (headingMatcher.matches()) {
                 flushParagraph(html, paragraph);
                 int level = headingMatcher.group(1).length();
@@ -34,7 +35,7 @@ public class MarkdownParser {
                 continue;
             }
 
-            if (!paragraph.isEmpty()) {
+            if (paragraph.length() > 0) {
                 paragraph.append(" ");
             }
             paragraph.append(processInline(trimmed));
@@ -45,13 +46,19 @@ public class MarkdownParser {
     }
 
     private void flushParagraph(StringBuilder html, StringBuilder paragraph) {
-        if (!paragraph.isEmpty()) {
+        if (paragraph.length() > 0) {
             html.append("<p>").append(paragraph).append("</p>\n");
             paragraph.setLength(0);
         }
     }
 
     private String processInline(String text) {
-        return BOLD.matcher(text).replaceAll(m -> "<strong>" + m.group(1) + "</strong>");
+        StringBuffer sb = new StringBuffer();
+        Matcher m = BOLD.matcher(text);
+        while (m.find()) {
+            m.appendReplacement(sb, "<strong>$1</strong>");
+        }
+        m.appendTail(sb);
+        return sb.toString();
     }
 }
